@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+  namespace: todo-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: todo-app
+          image: sanoobshan/todo-app:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DATABASE_URL
+              value: postgresql://postgres:password@postgres:5432/todo_app_production
+            - name: RAILS_ENV
+              value: production
+            - name: SECRET_KEY_BASE
+              value: 843ba0c079cd3d836e385814c3dc92c935f8e27be389356efe0d351448851ee92e015247124155ac7b7ade604154e4892307bbda8479643ed2c89c222a92cb89
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+              scheme: HTTP
+            
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 5
+            failureThreshold: 6
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-app
+  namespace: todo-app
+spec:
+  ports:
+    - port: 80
+      targetPort: 3000
+  selector:
+    app: todo-app
