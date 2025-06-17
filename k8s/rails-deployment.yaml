@@ -4,7 +4,7 @@ metadata:
   name: todo-app
   namespace: todo-app
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: todo-app
